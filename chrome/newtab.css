@@ -122,10 +122,16 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 200px;
-  font-size: 24px;
-  color: #333;
+  min-height: 100vh;
+  font-size: 240px;
+  color: #dcdcdc;
   font-family: 'Outfit', sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1000;
 }
 
 .loading span {
