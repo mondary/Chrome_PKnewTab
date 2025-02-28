@@ -1,6 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
   const newsContainer = document.getElementById('news-container');
+  const footer = document.querySelector('.custom-footer');
   const feedUrl = 'https://mondary.design/feed/';
+
+  function createLoadingAnimation() {
+    const loadingDiv = document.querySelector('.loading');
+    const text = 'LOADING';
+    loadingDiv.innerHTML = '';
+    
+    text.split('').forEach((letter, index) => {
+      const span = document.createElement('span');
+      span.textContent = letter;
+      span.style.animationDelay = `${index * 0.2}s`;
+      loadingDiv.appendChild(span);
+    });
+  }
+
+  createLoadingAnimation();
 
   async function fetchNews() {
     try {
@@ -15,8 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const text = await response.text();
-      console.log('Feed response:', text.substring(0, 200)); // Log first 200 chars for debugging
-
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(text, 'text/xml');
       
@@ -45,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const newsElement = document.createElement('div');
         newsElement.className = 'news-item';
         
-        // Extract text content from description by removing HTML tags
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = description;
         const textContent = tempDiv.textContent || tempDiv.innerText || '';
@@ -69,6 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         newsContainer.appendChild(newsElement);
       });
+
+      // Show footer after news content is loaded
+      setTimeout(() => {
+        footer.classList.add('visible');
+      }, 600); // Wait for news items animation to complete
+
     } catch (error) {
       newsContainer.innerHTML = `<div class="loading">Error loading news: ${error.message}</div>`;
       console.error('Feed fetch error:', error);
