@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Mondary News Mosaic",
+  "version": "1.0",
+  "description": "Displays the latest 15 news from mondary.design in a mosaic layout",
+  "permissions": [
+    "activeTab",
+    "https://mondary.design/*"
+  ],
+  "chrome_url_overrides": {
+    "newtab": "popup.html"
+  },
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

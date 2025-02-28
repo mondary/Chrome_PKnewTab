@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mondary News Mosaic</title>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body>
+  <div class="logo-container">
+    <a href="https://mondary.design" target="_blank">
+      <img src="logo.png" alt="Logo" class="logo">
+    </a>
+  </div>
+  <div class="search-container">
+    <form class="search-form" action="https://www.google.com/search" method="get">
+      <input type="text" name="q" class="search-input" placeholder="Rechercher sur Google..." autocomplete="off">
+    </form>
+  </div>
+  <div id="news-container" class="mosaic-grid">
+    <div class="loading">Loading news...</div>
+  </div>
+  <footer class="custom-footer">
+    <div class="footer-mask"></div>
+    <div class="footer-text">© 2025 Clement MONDARY</div>
+  </footer>
+  <script src="newtab.js"></script>
+</body>
+</html>
