@@ -65,7 +65,7 @@
     <div id="pinboard"></div>
     <script>
         const pinboard = document.getElementById("pinboard");
-        let gridSize = 100;
+        let highestZ = 1;
 
         function createNote(x, y, width = 100, height = 100, content = "") {
             const note = document.createElement("div");
@@ -74,6 +74,7 @@
             note.style.top = `${y}px`;
             note.style.width = `${width}px`;
             note.style.height = `${height}px`;
+            note.style.zIndex = highestZ++;
             
             const textArea = document.createElement("textarea");
             textArea.className = "note-content";
@@ -100,6 +101,7 @@
             let isResizing = false;
 
             el.addEventListener("mousedown", function (e) {
+                el.style.zIndex = highestZ++;
                 if (e.target.className === "delete" || e.target.className === "note-content") return;
                 if (e.offsetX > el.offsetWidth - 10 || e.offsetY > el.offsetHeight - 10) {
                     isResizing = true;
@@ -141,7 +143,8 @@
                     y: note.offsetTop,
                     width: note.offsetWidth,
                     height: note.offsetHeight,
-                    content: textArea.value
+                    content: textArea.value,
+                    zIndex: note.style.zIndex
                 });
             });
             localStorage.setItem("notes", JSON.stringify(notes));
@@ -149,7 +152,11 @@
 
         function loadNotes() {
             const notes = JSON.parse(localStorage.getItem("notes")) || [];
-            notes.forEach(n => createNote(n.x, n.y, n.width, n.height, n.content));
+            notes.forEach(n => {
+                createNote(n.x, n.y, n.width, n.height, n.content);
+                document.querySelector(".note:last-child").style.zIndex = n.zIndex;
+                highestZ = Math.max(highestZ, n.zIndex + 1);
+            });
         }
 
         pinboard.addEventListener("dblclick", (e) => {
