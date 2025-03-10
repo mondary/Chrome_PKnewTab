@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid-Based Pinboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        #pinboard {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+        .note {
+            position: absolute;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ccc;
+            cursor: grab;
+            resize: both;
+            overflow: auto;
+            min-width: 100px;
+            min-height: 100px;
+            direction: ltr;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .note-content {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            outline: none;
+            resize: none;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .delete {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            background: none;
+            color: black;
+            border: none;
+            font-size: 16px;
+        }
+        .note:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div id="pinboard"></div>
+    <script>
+        const pinboard = document.getElementById("pinboard");
+        let gridSize = 100;
+
+        function createNote(x, y, width = 100, height = 100, content = "") {
+            const note = document.createElement("div");
+            note.className = "note";
+            note.style.left = `${x}px`;
+            note.style.top = `${y}px`;
+            note.style.width = `${width}px`;
+            note.style.height = `${height}px`;
+            
+            const textArea = document.createElement("textarea");
+            textArea.className = "note-content";
+            textArea.value = content;
+            textArea.oninput = saveNotes;
+            
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "delete";
+            deleteBtn.innerText = "×";
+            deleteBtn.onclick = () => {
+                pinboard.removeChild(note);
+                saveNotes();
+            };
+            
+            note.appendChild(deleteBtn);
+            note.appendChild(textArea);
+            pinboard.appendChild(note);
+            dragElement(note);
+            saveNotes();
+        }
+
+        function dragElement(el) {
+            let offsetX, offsetY;
+            let isResizing = false;
+
+            el.addEventListener("mousedown", function (e) {
+                if (e.target.className === "delete" || e.target.className === "note-content") return;
+                if (e.offsetX > el.offsetWidth - 10 || e.offsetY > el.offsetHeight - 10) {
+                    isResizing = true;
+                    document.onmousemove = resizeElement;
+                } else {
+                    offsetX = e.clientX - el.offsetLeft;
+                    offsetY = e.clientY - el.offsetTop;
+                    document.onmousemove = moveElement;
+                }
+                document.onmouseup = stopElement;
+            });
+
+            function moveElement(e) {
+                if (!isResizing) {
+                    el.style.left = `${e.clientX - offsetX}px`;
+                    el.style.top = `${e.clientY - offsetY}px`;
+                }
+            }
+
+            function resizeElement(e) {
+                el.style.width = `${e.clientX - el.offsetLeft}px`;
+                el.style.height = `${e.clientY - el.offsetTop}px`;
+            }
+
+            function stopElement() {
+                document.onmousemove = null;
+                document.onmouseup = null;
+                isResizing = false;
+                saveNotes();
+            }
+        }
+
+        function saveNotes() {
+            const notes = [];
+            document.querySelectorAll(".note").forEach(note => {
+                const textArea = note.querySelector(".note-content");
+                notes.push({
+                    x: note.offsetLeft,
+                    y: note.offsetTop,
+                    width: note.offsetWidth,
+                    height: note.offsetHeight,
+                    content: textArea.value
+                });
+            });
+            localStorage.setItem("notes", JSON.stringify(notes));
+        }
+
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            notes.forEach(n => createNote(n.x, n.y, n.width, n.height, n.content));
+        }
+
+        pinboard.addEventListener("dblclick", (e) => {
+            createNote(e.clientX, e.clientY);
+        });
+
+        window.onload = loadNotes;
+    </script>
+</body>
+</html>
