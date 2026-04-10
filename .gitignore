@@ -1,4 +1,4 @@
-chrome/test.html
+src/test.html
 Icon
 AGENTchromeWebStore.txt
 Icon
@@ -7,4 +7,5 @@ NewTabRssMondary_440x280_cropped.png
 NewTabRssMondary_1280x800_cropped.png
 NewTabRssMondary_1400x560_cropped.png
 NewTabRssMondary.png
-NewTabRssMondary.zip
+release/*.zip
+.agent
