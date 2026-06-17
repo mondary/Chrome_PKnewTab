@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Mondary NEW TAB",
+  "name": "PKnewTab",
   "version": "2.1.0",
   "description": "Displays the latest 15 news from mondary.design in a mosaic layout",
   "permissions": [

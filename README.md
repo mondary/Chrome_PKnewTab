@@ -1,6 +1,6 @@
 <div align=”center”>
 
-# Mondary NEW TAB
+# PKnewTab
 
 ![Project icon](icon.png)
 
