@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const newsContainer = document.getElementById('news-container');
   const footer = document.querySelector('.custom-footer');
   const fallbackImage = 'logo.png';
-  const feedUrl = 'https://mondary.design/feed/';
-  const postsApiUrl = 'https://mondary.design/wp-json/wp/v2/posts?per_page=15&_embed=wp:featuredmedia&_fields=link,date,title.rendered,excerpt.rendered,jetpack_featured_media_url,_embedded.wp:featuredmedia.source_url';
 
   function createLoadingAnimation() {
     const loadingDiv = document.querySelector('.loading');
@@ -40,9 +38,21 @@ document.addEventListener('DOMContentLoaded', () => {
       return fallbackImage;
     }
 
-    const largeSource = embeddedMedia.media_details?.sizes?.large?.source_url;
-    const fullSource = embeddedMedia.media_details?.sizes?.full?.source_url;
-    return largeSource || fullSource || embeddedMedia.source_url || fallbackImage;
+    if (embeddedMedia.media_details?.sizes) {
+      const sizes = embeddedMedia.media_details.sizes;
+      const preferredSizes = ['large', 'medium_large', 'medium', 'full', 'thumbnail'];
+      for (const size of preferredSizes) {
+        if (sizes[size]?.source_url) {
+          return sizes[size].source_url;
+        }
+      }
+    }
+
+    if (embeddedMedia.source_url) {
+      return embeddedMedia.source_url;
+    }
+
+    return fallbackImage;
   }
 
   function buildNewsCard(item) {
@@ -87,81 +97,105 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function fetchNewsFromWpApi() {
-    const response = await fetch(postsApiUrl);
-    if (!response.ok) {
-      throw new Error(`WP API error: ${response.status}`);
-    }
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ action: 'fetchPosts' }, (response) => {
+        console.log('📨 Response received:', response);
 
-    const posts = await response.json();
-    if (!Array.isArray(posts) || posts.length === 0) {
-      throw new Error('No posts found from WP API');
-    }
+        if (response && response.success) {
+          if (response.isRSS) {
+            console.log('🔄 Using RSS fallback');
+            // Parse RSS response
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(response.data, 'text/xml');
 
-    return posts.slice(0, 15).map((post) => {
-      const rawExcerpt = stripHtml(post.excerpt?.rendered || '');
-      const pinIndex = rawExcerpt.indexOf('📌');
-      const excerpt = pinIndex !== -1
-        ? rawExcerpt.substring(pinIndex + 2).trim().substring(0, 200)
-        : rawExcerpt.trim().substring(0, 200);
+            if (xmlDoc.querySelector('parsererror')) {
+              reject(new Error('Invalid XML format'));
+              return;
+            }
 
-      return {
-        title: decodeHtmlEntities(post.title?.rendered || 'Untitled'),
-        link: post.link || 'https://mondary.design/',
-        pubDate: new Date(post.date || Date.now()),
-        excerpt,
-        imgSrc: getFeaturedImageFromPost(post)
-      };
+            const items = xmlDoc.querySelectorAll('item');
+            const newsItems = Array.from(items).slice(0, 15);
+
+            if (newsItems.length === 0) {
+              reject(new Error('No news items found in the feed'));
+              return;
+            }
+
+            const processedItems = newsItems.map((item) => {
+              const title = item.querySelector('title')?.textContent || 'Untitled';
+              const link = item.querySelector('link')?.textContent || 'https://mondary.design/';
+              const pubDate = new Date(item.querySelector('pubDate')?.textContent || Date.now());
+              const description = item.querySelector('description')?.textContent || '';
+
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = description;
+              const textContent = tempDiv.textContent || tempDiv.innerText || '';
+              const pinIndex = textContent.indexOf('📌');
+              const excerpt = pinIndex !== -1
+                ? textContent.substring(pinIndex + 2).trim().substring(0, 200)
+                : textContent.trim().substring(0, 200);
+
+              // Try to extract image from description HTML
+              let imgSrc = fallbackImage;
+              const imgMatch = description.match(/<img[^>]+src="([^">]+)"/);
+              if (imgMatch && imgMatch[1]) {
+                imgSrc = imgMatch[1];
+              }
+
+              console.log('🖼️ RSS Image for', title, ':', imgSrc);
+
+              return {
+                title,
+                link,
+                pubDate,
+                excerpt,
+                imgSrc
+              };
+            });
+
+            resolve(processedItems);
+          } else {
+            console.log('✅ Using WP API');
+            // Parse WP API response
+            const posts = response.data;
+            console.log('📦 Posts received:', posts.length);
+
+            if (!Array.isArray(posts) || posts.length === 0) {
+              reject(new Error('No posts found from WP API'));
+              return;
+            }
+
+            const processedItems = posts.slice(0, 15).map((post) => {
+              const rawExcerpt = stripHtml(post.excerpt?.rendered || '');
+              const pinIndex = rawExcerpt.indexOf('📌');
+              const excerpt = pinIndex !== -1
+                ? rawExcerpt.substring(pinIndex + 2).trim().substring(0, 200)
+                : rawExcerpt.trim().substring(0, 200);
+
+              const imgSrc = getFeaturedImageFromPost(post);
+              console.log('🖼️ API Image for', post.title?.rendered, ':', imgSrc);
+
+              return {
+                title: decodeHtmlEntities(post.title?.rendered || 'Untitled'),
+                link: post.link || 'https://mondary.design/',
+                pubDate: new Date(post.date || Date.now()),
+                excerpt,
+                imgSrc
+              };
+            });
+
+            resolve(processedItems);
+          }
+        } else {
+          reject(new Error(response?.error || 'Failed to fetch posts'));
+        }
+      });
     });
   }
 
   async function fetchNewsFromRssFallback() {
-    const response = await fetch(feedUrl, {
-      headers: {
-        Accept: 'application/rss+xml'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`RSS error: ${response.status}`);
-    }
-
-    const text = await response.text();
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(text, 'text/xml');
-
-    if (xmlDoc.querySelector('parsererror')) {
-      throw new Error('Invalid XML format');
-    }
-
-    const items = xmlDoc.querySelectorAll('item');
-    const newsItems = Array.from(items).slice(0, 15);
-
-    if (newsItems.length === 0) {
-      throw new Error('No news items found in the feed');
-    }
-
-    return newsItems.map((item) => {
-      const title = item.querySelector('title')?.textContent || 'Untitled';
-      const link = item.querySelector('link')?.textContent || 'https://mondary.design/';
-      const pubDate = new Date(item.querySelector('pubDate')?.textContent || Date.now());
-      const description = item.querySelector('description')?.textContent || '';
-
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = description;
-      const textContent = tempDiv.textContent || tempDiv.innerText || '';
-      const pinIndex = textContent.indexOf('📌');
-      const excerpt = pinIndex !== -1
-        ? textContent.substring(pinIndex + 2).trim().substring(0, 200)
-        : textContent.trim().substring(0, 200);
-
-      return {
-        title,
-        link,
-        pubDate,
-        excerpt,
-        imgSrc: fallbackImage
-      };
-    });
+    // This function is now handled within fetchNewsFromWpApi via the background script
+    return fetchNewsFromWpApi();
   }
 
   async function fetchNews() {

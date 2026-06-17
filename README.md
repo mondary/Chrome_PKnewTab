@@ -1,60 +1,78 @@
+<div align=”center”>
+
 # Mondary NEW TAB
 
-![Project icon](src/logo.png)
+![Project icon](icon.png)
 
-[🇫🇷 FR](README.md)
+**🎨 Découvrez le design moderne au quotidien**
 
-Extension Chrome qui remplace l’onglet “Nouveau” par une mosaïque des derniers articles publiés sur `mondary.design`.
+Une belle façon de commencer votre navigation sur le web — chaque nouvel onglet affiche les derniers articles de [mondary.design](https://mondary.design).
 
-## ✅ Fonctionnalités
-- Affichage des 15 derniers articles.
-- Récupération des images featured via l’API WordPress.
-- Fallback RSS si l’API WordPress n’est pas disponible.
-- Barre de recherche Google intégrée.
-- Ouverture des articles en nouvel onglet.
+[⭐ Installer depuis le Chrome Web Store](https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd?hl=fr)
 
-## 🧠 Utilisation
-- Ouvrir un nouvel onglet Chrome.
-- Les articles se chargent automatiquement.
-- Cliquer une carte pour ouvrir l’article.
-- Utiliser le champ de recherche pour une requête Google.
+</div>
 
-## 📁 Structure du projet
-- `src/` : extension non packagée (manifest, HTML, CSS, JS, assets).
-- `release/` : archives `.zip` prêtes pour upload sur Chrome Web Store.
+## ✨ À propos
 
-## 📦 Build & Package
+Mondary NEW TAB transforme votre page “Nouvel onglet” en une vitrine inspirante du design contemporain. Chaque fois que vous ouvrez un nouvel onglet, vous découvrez une sélection des 15 derniers articles publiés sur mondary.design, le site de référence pour le design moderne.
+
+### 🎯 Ce que vous obtenez
+
+- **Mosaïque dynamique** — Les 15 derniers articles de mondary.design en un coup d’œil
+- **Images en haute qualité** — Vignettes automatiques pour chaque article
+- **Recherche intégrée** — Barre de recherche Google intégrée pour chercher directement
+- **Expérience fluide** — Cliquez sur n’importe quelle carte pour ouvrir l’article dans un nouvel onglet
+- **Design épuré** — Interface minimaliste qui met en valeur le contenu
+
+## 🚀 Installation
+
+L’installation se fait en un clic depuis le [Chrome Web Store](https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd?hl=fr).
+
+C’est gratuit et sécurisé — l’extension ne collecte aucune donnée personnelle.
+
+## 📸 Aperçu
+
+Ouvrez simplement un nouvel onglet Chrome, et vous verrez instantanément les derniers articles de mondary.design. C’est tout !
+
+**C’est parfait pour :**
+- 🎨 Les designers cherchant de l’inspiration
+- 📱 Les passionnés de design UI/UX  
+- 🖌️ Les créatifs à la recherche de tendances
+- 💡 Tous ceux qui apprécient le beau design
+
+## 🛠️ Pour les développeurs
+
+### Structure du projet
+- `src/` : extension non packagée (manifest, HTML, CSS, JS, assets)
+- `release/` : archives `.zip` prêtes pour upload sur Chrome Web Store
+
+### Build & Package
 Créer un zip de release depuis `src/`:
 
 ```bash
 cd src
-zip -r ../release/NewTabRssMondary_v1.0.1.zip . -x "*.DS_Store"
+zip -r ../release/NewTabRssMondary_v2.1.0.zip . -x “*.DS_Store”
 ```
 
-## 🧪 Installation locale (non packagée)
-1. Ouvrir `chrome://extensions/`.
-2. Activer `Mode développeur`.
-3. Cliquer `Charger l’extension non empaquetée`.
-4. Sélectionner le dossier `src/`.
-5. Ouvrir un nouvel onglet pour tester.
+### Installation locale (développement)
+1. Ouvrir `chrome://extensions/`
+2. Activer `Mode développeur`
+3. Cliquer `Charger l’extension non empaquetée`
+4. Sélectionner le dossier `src/`
+5. Ouvrir un nouvel onglet pour tester
 
-## 🚀 Publication Chrome Web Store
-Publication manuelle (recommandée):
-1. Ouvrir le dashboard développeur Chrome Web Store.
-2. Sélectionner l’extension `Mondary NEW TAB`.
-3. Upload un zip depuis `release/`.
-4. Vérifier la fiche store (captures, confidentialité, etc.).
-5. Soumettre pour review/publication.
+## 📝 Changelog
 
-Publication API (optionnelle):
-- Variables OAuth requises: `CWS_PUBLISHER_ID`, `CWS_EXTENSION_ID`, `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN`.
-- API cible: `chromewebstore.googleapis.com` v2.
-
-## 🧾 Changelog
-### 1.0.1 - 2026-04-10
-- Correction de l’affichage des images d’articles via l’API WordPress (featured media).
-- Ajout d’un fallback image fiable.
-- Fallback RSS conservé si l’API principale échoue.
+### 2.1.0 - 2026-04-10
+- Correction de l’affichage des images d’articles via l’API WordPress (featured media)
+- Ajout d’un fallback image fiable
+- Fallback RSS conservé si l’API principale échoue
 
 ### 1.0.0
-- Première version publique.
+- Première version publique
+
+---
+
+**🔗 Conçu avec ❤️ pour la communauté design**
+
+[🇫🇷 Français](README.md)
