@@ -15,29 +15,6 @@ body {
   height: auto;
 }
 
-.search-container {
-  max-width: 600px;
-  margin: 0 auto 40px;
-}
-
-.search-form {
-  width: 100%;
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 20px;
-  font-size: 16px;
-  border: 2px solid #ddd;
-  border-radius: 24px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.search-input:focus {
-  border-color: #4285f4;
-}
-
 #news-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

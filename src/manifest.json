@@ -1,11 +1,8 @@
 {
   "manifest_version": 3,
   "name": "PKnewTab",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Displays the latest 15 news from mondary.design in a mosaic layout",
-  "permissions": [
-    "activeTab"
-  ],
   "host_permissions": [
     "https://mondary.design/*"
   ],
