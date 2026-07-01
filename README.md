@@ -1,6 +1,6 @@
 <div align=”center”>
 
-# PKnewTab
+# PK New Tab
 
 ![Project icon](icon.png)
 
@@ -63,10 +63,14 @@ zip -r ../release/NewTabRssMondary_v2.1.0.zip . -x “*.DS_Store”
 
 ## 📝 Changelog
 
+### 2.1.3 - 2026-07-01
+- Mise à jour branding PK-Labs, noms cohérents et descriptions optimisées
+- Ajout lien vers mondary.design dans les descriptions
+
 ### 2.1.0 - 2026-04-10
-- Correction de l’affichage des images d’articles via l’API WordPress (featured media)
-- Ajout d’un fallback image fiable
-- Fallback RSS conservé si l’API principale échoue
+- Correction de l'affichage des images d'articles via l'API WordPress (featured media)
+- Ajout d'un fallback image fiable
+- Fallback RSS conservé si l'API principale échoue
 
 ### 1.0.0
 - Première version publique
@@ -74,5 +78,13 @@ zip -r ../release/NewTabRssMondary_v2.1.0.zip . -x “*.DS_Store”
 ---
 
 **🔗 Conçu avec ❤️ pour la communauté design**
+
+## 🔗 Liens
+
+- **Chrome Web Store** : [PK New Tab](https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd?hl=fr)
+- **Politique de Confidentialité** : [GitHub Pages](https://mondary.github.io/Chrome_PKnewTab/store/privacy-policy-mondary-new-tab.html)
+- **Site** : [mondary.design](https://mondary.design)
+- **Description** : [store/DESCRIPTION.md](store/DESCRIPTION.md)
+- [README English](README_en.md)
 
 [🇫🇷 Français](README.md)
