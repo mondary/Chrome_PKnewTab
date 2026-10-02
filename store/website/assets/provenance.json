@@ -1,0 +1,16 @@
+{
+  "wallpaper": {
+    "catalog_id": "13995d87892a",
+    "source": "premium-promo-media/assets/wallpapers/originals/13995d87892a.png",
+    "original_local": "wallpaper-original.png",
+    "web_derivative": "dusk.jpg",
+    "use": "background behind the simulated browser only; not a product screenshot",
+    "sha256": "13995d87892a6101f8acb06c650f5a5f622cae2956f9275d5d01589001b72e16"
+  },
+  "articles": {
+    "source": "https://mondary.design/wp-json/wp/v2/posts?per_page=8&_embed=wp:featuredmedia",
+    "frozen_on": "2026-10-02",
+    "local_metadata": "posts.json",
+    "local_thumbnails": "covers/01.jpg through covers/08.jpg"
+  }
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!-- Harnais de vérification : charge la landing dans 4 iframes (390/768/1440/1920)
+     et mesure le débordement horizontal de chacune. Résultat dans <title> (dump-dom).
+     À lancer avec Chrome headless --allow-file-access-from-files. -->
+<html lang="fr">
+<head><meta charset="UTF-8"><title>CHECK pending</title></head>
+<body style="margin:0;display:flex">
+<iframe src="../website/index.html" width="390" height="900" id="w390" style="border:0"></iframe>
+<iframe src="../website/index.html" width="768" height="900" id="w768" style="border:0"></iframe>
+<iframe src="../website/index.html" width="1440" height="900" id="w1440" style="border:0"></iframe>
+<iframe src="../website/index.html" width="1920" height="900" id="w1920" style="border:0"></iframe>
+<script>
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const parts = [];
+    for (const w of [390, 768, 1440, 1920]) {
+      try {
+        const d = document.getElementById('w' + w).contentDocument;
+        const de = d.documentElement;
+        const over = de.scrollWidth - de.clientWidth;
+        parts.push(w + ':' + (over > 1 ? 'OVERFLOW+' + over : 'ok'));
+      } catch (e) { parts.push(w + ':ERR'); }
+    }
+    document.title = 'CHECK ' + parts.join(' ');
+  }, 600);
+});
+</script>
+</body>
+</html>

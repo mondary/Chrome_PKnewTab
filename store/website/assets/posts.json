@@ -1,0 +1,58 @@
+[
+  {
+    "title": "REMINDERS MENUBAR : vos rappels Apple se pilotent depuis la barre de menus",
+    "link": "https://mondary.design/2026/10/reminders-menubar/",
+    "image": "assets/covers/01.jpg",
+    "excerpt": "REMINDERS MENUBAR gère vos rappels Apple depuis la barre de menus : création en langage naturel, recherche, filtres et raccourci clavier, en synchronisation native avec Apple ",
+    "date": "2026-10-02"
+  },
+  {
+    "title": "NUVIO : garder sa bibliothèque vidéo avec soi, sur tous les écrans",
+    "link": "https://mondary.design/2026/10/nuvio-garder-sa-bibliotheque-video-avec-soi-sur-tous-les-ecrans/",
+    "image": "assets/covers/02.jpg",
+    "excerpt": "Nuvio garde votre bibliothèque vidéo, votre progression et vos profils avec vous sur tous les écrans.",
+    "date": "2026-10-01"
+  },
+  {
+    "title": "LAYA : l’alternative open source à Jev qui tranche en 21 millisecondes",
+    "link": "https://mondary.design/2026/10/laya-lalternative-open-source-a-jev-qui-tranche-en-21-millisecondes/",
+    "image": "assets/covers/03.jpg",
+    "excerpt": "LAYA répond par des décisions typées avec probabilités en 21 ms, en local, poids ouverts Apache-2.0. Face à Jev, l’API fermée de TypeSafe : égalité sur les tâches simples, 45 ",
+    "date": "2026-10-01"
+  },
+  {
+    "title": "BLUME 2.0 : des docs qui parlent aux humains et aux agents",
+    "link": "https://mondary.design/2026/10/blume-2-0-docs-humains-agents/",
+    "image": "assets/covers/04.jpg",
+    "excerpt": "BLUME 2.0 : un dossier de Markdown devient un site de docs complet, avec recherche, analytics et une surface lisible par les agents IA (llms.txt, MCP). Open source, MIT, pilot",
+    "date": "2026-10-01"
+  },
+  {
+    "title": "PULSE : vos quotas d’agents IA au bord de l’écran",
+    "link": "https://mondary.design/2026/10/pulse-quotas-agents-ia/",
+    "image": "assets/covers/05.jpg",
+    "excerpt": "PULSE colle au bord de l’écran de votre Mac une fine barre qui affiche en temps réel ce qu’il reste de vos quotas Claude Code, Codex, Cursor et dix-sept autres agents de code.",
+    "date": "2026-10-01"
+  },
+  {
+    "title": "DIETPI : le Debian minimal qui installe ses logiciels tout seul",
+    "link": "https://mondary.design/2026/10/dietpi-le-debian-minimal-qui-installe-ses-logiciels-tout-seul/",
+    "image": "assets/covers/06.jpg",
+    "excerpt": "DietPi installe et optimise automatiquement des dizaines de logiciels sur Raspberry Pi, Odroid et PINE64, sans lire cinq guides à la suite.",
+    "date": "2026-10-01"
+  },
+  {
+    "title": "MCP-GSC : Google Search Console pilotée en langage naturel",
+    "link": "https://mondary.design/2026/09/mcp-gsc-google-search-console-pilotee-en-langage-naturel/",
+    "image": "assets/covers/07.jpg",
+    "excerpt": "MCP-GSC relie Google Search Console à vos assistants IA : vingt outils pour interroger vos données, inspecter vos URL et gérer vos sitemaps, en langage naturel.",
+    "date": "2026-09-30"
+  },
+  {
+    "title": "BAST : le raccourci vers les serveurs que vous utilisez tous les jours",
+    "link": "https://mondary.design/2026/09/bast-le-raccourci-vers-les-serveurs-que-vous-utilisez-tous-les-jours/",
+    "image": "assets/covers/08.jpg",
+    "excerpt": "BAST lit votre ~/.ssh/config et ajoute un sélecteur d’hôtes, un gestionnaire de clés, du SFTP double pane et un Vault chiffré de bout en bout — sans jamais remplacer OpenSSH, ",
+    "date": "2026-09-30"
+  }
+]

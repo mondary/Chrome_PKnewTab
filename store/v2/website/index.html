@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PK New Tab — Chaque nouvel onglet, un nouvel outil à découvrir</title>
+  <meta name="description" content="PK New Tab transforme votre page nouvel onglet en mosaïque des derniers outils et pépites dénichés sur mondary.design. Extension Chrome gratuite, sans publicité, aucune donnée collectée.">
+  <meta property="og:title" content="PK New Tab — Chaque nouvel onglet, un nouvel outil à découvrir">
+  <meta property="og:description" content="Les derniers outils et pépites de mondary.design en mosaïque, à chaque nouvel onglet. Extension Chrome gratuite.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/card-1200x630.png">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <style>
+    @font-face {
+      font-family: 'Outfit';
+      src: url('assets/fonts/outfit-var.woff2') format('woff2');
+      font-weight: 100 900;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Outfit';
+      src: url('assets/fonts/outfit-var-ext.woff2') format('woff2');
+      font-weight: 100 900;
+      font-display: swap;
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    :root {
+      --paper: #f7f6f3;
+      --paper-2: #efeee9;
+      --ink: #1d1d1f;
+      --ink-2: #55555c;
+      --ink-3: #646469;
+      --accent: #1a73e8;
+      --accent-ink: #1557b0;
+      --night: #060b14;
+      --card: #ffffff;
+      --radius: 14px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent-ink); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 3px solid #7ab5ff; outline-offset: 3px; border-radius: 4px; }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+    /* ————— i18n : FR par défaut (lisible sans JS), EN si html.lang-en ————— */
+    .i18n .en { display: none; }
+    html.lang-en .i18n .fr { display: none; }
+    html.lang-en .i18n .en { display: inline; }
+
+    /* ————— Header (verre sombre, cohérent avec le hero) ————— */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(6, 11, 20, 0.72);
+      backdrop-filter: saturate(1.4) blur(12px);
+      -webkit-backdrop-filter: saturate(1.4) blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    }
+    .bar { display: flex; align-items: center; gap: 14px; height: 62px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; font-size: 19px; color: #fff; }
+    .brand img { width: 30px; height: 30px; border-radius: 7px; display: block; }
+    .brand:hover { text-decoration: none; }
+    .spacer { flex: 1; }
+    .lang-switch { display: flex; border: 1px solid rgba(255,255,255,0.25); border-radius: 9px; overflow: hidden; }
+    .lang-switch button {
+      font: inherit; font-size: 14px; font-weight: 600; letter-spacing: 0.04em;
+      padding: 6px 13px; border: 0; background: transparent; color: rgba(255,255,255,0.75);
+      cursor: pointer;
+    }
+    .lang-switch button[aria-pressed="true"] { background: #fff; color: var(--night); }
+    .cta-mini {
+      font-weight: 600; font-size: 15px; color: #fff; background: var(--accent);
+      padding: 9px 18px; border-radius: 999px;
+    }
+    .cta-mini:hover { background: #3b86ee; text-decoration: none; }
+
+    /* ————— Hero : fond d'écran de la bibliothèque (bleu nuit) ————— */
+    .hero {
+      position: relative;
+      color: #fff;
+      padding: 88px 0 72px;
+      background:
+        linear-gradient(180deg, rgba(4, 8, 15, 0.84) 0%, rgba(4, 8, 15, 0.46) 46%, rgba(4, 8, 15, 0.60) 74%, rgba(5, 9, 17, 0.92) 100%),
+        url('assets/wallpapers/hero-bg.jpg') center 38% / cover no-repeat,
+        var(--night);
+    }
+    .eyebrow {
+      font-size: 14px; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: #b7cdec; margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(38px, 6vw, 66px); line-height: 1.04;
+      font-weight: 700; letter-spacing: -0.022em; max-width: 16ch;
+      text-wrap: balance;
+    }
+    h1 em { font-style: normal; color: #7ab5ff; }
+    .lede {
+      margin-top: 22px; font-size: clamp(17px, 2.1vw, 21px);
+      color: #d6e2f2; max-width: 56ch;
+    }
+    .lede a { color: #9cc4f5; }
+    .hero-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 32px; }
+    .cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 18px; color: #fff; background: var(--accent);
+      padding: 15px 30px; border-radius: 999px;
+      box-shadow: 0 12px 32px rgba(26, 115, 232, 0.42);
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .cta:hover { background: #3b86ee; text-decoration: none; transform: translateY(-1px); }
+    .cta svg { display: block; }
+    .cta-note { font-size: 15px; color: #b9cde8; }
+    .sig {
+      margin-top: 14px; font-size: 14px; color: #9db3d4; letter-spacing: 0.01em;
+    }
+
+    /* ————— Démo interactive : navigateur simulé ————— */
+    .stage { margin-top: 56px; }
+    .stage-hint {
+      margin-top: 14px; text-align: center; font-size: 14px; color: #b9cde8;
+    }
+    .sim {
+      border-radius: 16px; overflow: hidden; background: #fff;
+      box-shadow: 0 34px 90px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.12);
+    }
+    .sim-bar {
+      display: flex; align-items: center; gap: 12px;
+      background: #1e2530; padding: 10px 14px; color: #cfd8e3;
+    }
+    .dots { display: flex; gap: 7px; }
+    .dots i { width: 12px; height: 12px; border-radius: 50%; background: #454e5c; }
+    .sim-tabs { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
+    .sim-tab {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; padding: 5px 12px; border-radius: 8px;
+      background: #2c3644; color: #e8eef6; white-space: nowrap; max-width: 230px;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .sim-tab .close {
+      border: 0; background: transparent; color: #93a1b5; cursor: pointer;
+      font-size: 13px; line-height: 1; padding: 2px 3px; border-radius: 4px;
+    }
+    .sim-tab .close:hover { background: #3a4557; color: #fff; }
+    .sim-newtab {
+      border: 0; background: transparent; color: #93a1b5; cursor: pointer;
+      font-size: 19px; line-height: 1; padding: 2px 8px; border-radius: 6px;
+    }
+    .sim-newtab:hover { background: #3a4557; color: #fff; }
+    .omni { flex: 0 1 300px; background: #121821; border-radius: 999px; height: 24px; }
+
+    .sim-view { position: relative; height: 520px; background: #fff; }
+    .sim-shot { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+
+    /* Écran LOADING de la simulation (reproduit celui de l'extension) */
+    .sim-loading {
+      position: absolute; inset: 0; z-index: 5; background: #fff;
+      display: flex; justify-content: center; align-items: center;
+      font-family: 'Outfit', sans-serif; font-size: clamp(90px, 16vw, 200px);
+      color: #dcdcdc; letter-spacing: 0.04em;
+    }
+    .sim-loading span { opacity: 0; }
+    html.js .sim-loading.play span { animation: simType 0.2s ease forwards; }
+    @keyframes simType { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Mosaïque de la simulation (reprend les proportions de l'extension) */
+    .sim-mosaic {
+      position: absolute; inset: 0; overflow-y: auto; background: #fff;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+      padding: 34px 26px 26px; align-content: start;
+    }
+    .sim-logo { grid-column: 1 / -1; justify-self: center; width: 96px; border-radius: 20px; display: block; }
+    .sim-card {
+      font: inherit; text-align: left; border: 0; background: #fff; border-radius: 10px;
+      overflow: hidden; cursor: pointer; padding: 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      opacity: 0; transform: translateY(14px);
+    }
+    html.js .sim-mosaic.play .sim-card { animation: simUp 0.6s ease forwards; }
+    @keyframes simUp { to { opacity: 1; transform: translateY(0); } }
+    .sim-card:hover, .sim-card:focus-visible {
+      transform: translateY(-5px) !important; opacity: 1 !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .sim-card img { display: block; width: 100%; height: 108px; object-fit: cover; }
+    .sim-card .c { padding: 12px 14px 14px; }
+    .sim-card .t {
+      font-weight: 700; font-size: 14px; line-height: 1.35; color: #333;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .sim-card .d { font-size: 11px; color: #666; margin-top: 5px; }
+    .sim-card .e {
+      font-size: 11.5px; color: #444; margin-top: 6px; line-height: 1.45;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* Panneau « article ouvert dans un nouvel onglet » */
+    .sim-article {
+      position: absolute; inset: 0; z-index: 6; background: #fff; color: var(--ink);
+      overflow-y: auto; padding: 38px 44px;
+    }
+    .sim-article .meta { font-size: 13px; color: #646469; margin-bottom: 10px; }
+    .sim-article h3 { font-size: clamp(22px, 3vw, 30px); line-height: 1.2; letter-spacing: -0.01em; max-width: 26ch; }
+    .sim-article img { display: block; width: min(420px, 100%); border-radius: 12px; margin: 20px 0; }
+    .sim-article p { font-size: 15px; color: #3c3c41; max-width: 58ch; }
+    .sim-article .note {
+      margin-top: 22px; font-size: 12.5px; color: #646469;
+      border-top: 1px solid #e8e8e2; padding-top: 14px; max-width: none;
+    }
+    .sim-article .note a { font-weight: 600; }
+
+    /* ————— Sections claires ————— */
+    section { padding: 84px 0; }
+    section.alt { background: var(--paper-2); }
+    h2 {
+      font-size: clamp(28px, 4vw, 44px); line-height: 1.1;
+      font-weight: 700; letter-spacing: -0.018em; max-width: 22ch;
+      text-wrap: balance;
+    }
+    .section-sub { margin-top: 14px; font-size: 19px; color: var(--ink-2); max-width: 58ch; }
+
+    /* Cycle en 3 états */
+    .cycle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 48px; }
+    .state {
+      background: var(--card); border-radius: var(--radius); overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+    }
+    .state img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+    .state figcaption { padding: 18px 20px 20px; }
+    .state .k {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 6px;
+    }
+    .state .t { font-weight: 700; font-size: 18px; }
+    .state .d { margin-top: 5px; font-size: 15px; color: var(--ink-2); }
+
+    /* Fonctionnalités */
+    .feat { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 40px; margin-top: 46px; }
+    .feat li {
+      list-style: none; display: flex; gap: 16px; align-items: flex-start;
+      background: var(--card); border: 1px solid rgba(0,0,0,0.06);
+      border-radius: var(--radius); padding: 22px 24px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    }
+    .feat svg { flex: 0 0 auto; margin-top: 2px; }
+    .feat .t { font-weight: 700; font-size: 17px; display: block; }
+    .feat .d { font-size: 15px; color: var(--ink-2); margin-top: 3px; }
+
+    /* Installation */
+    .install-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 34px; margin-top: 44px; align-items: start; }
+    .store-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid rgba(0,0,0,0.06); padding: 34px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
+    }
+    .store-meta { margin-top: 16px; font-size: 14px; color: var(--ink-3); }
+    .dev-card {
+      background: transparent; border: 1px dashed rgba(0,0,0,0.18);
+      border-radius: var(--radius); padding: 26px 28px;
+    }
+    .dev-card .t { font-weight: 700; font-size: 16px; margin-bottom: 10px; display: block; }
+    .dev-card ol { margin-left: 18px; font-size: 15px; color: var(--ink-2); }
+    .dev-card li { margin: 5px 0; }
+    .dev-card code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px;
+      background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* Soutien : bandeau sombre sur le même fond d'écran */
+    .support {
+      position: relative; color: #fff; text-align: center;
+      background:
+        linear-gradient(180deg, rgba(4, 8, 15, 0.88), rgba(4, 8, 15, 0.80)),
+        url('assets/wallpapers/hero-bg.jpg') center 62% / cover no-repeat,
+        var(--night);
+    }
+    .support .section-sub { margin-left: auto; margin-right: auto; color: #d6e2f2; }
+    .kofi {
+      display: inline-flex; align-items: center; gap: 10px; margin-top: 26px;
+      font-weight: 700; font-size: 17px; color: var(--ink);
+      background: #fff; border: 2px solid #29abe0;
+      padding: 11px 24px; border-radius: 999px;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .kofi:hover { background: #e8f4fb; text-decoration: none; transform: translateY(-1px); }
+
+    footer {
+      padding: 40px 0 46px; border-top: 1px solid rgba(0,0,0,0.08);
+      font-size: 14px; color: var(--ink-3);
+    }
+    footer .links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 10px; }
+
+    /* Reveal au scroll (uniquement si JS actif et mouvement autorisé) */
+    @media (prefers-reduced-motion: no-preference) {
+      html.js .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+      html.js .reveal.in { opacity: 1; transform: none; }
+    }
+
+    /* ————— Responsive ————— */
+    @media (max-width: 960px) {
+      .cycle { grid-template-columns: 1fr 1fr; }
+      .feat { grid-template-columns: 1fr; }
+      .install-grid { grid-template-columns: 1fr; }
+      .sim-view { height: 440px; }
+    }
+    @media (max-width: 640px) {
+      .cycle { grid-template-columns: 1fr; }
+      .hero { padding-top: 56px; }
+      section { padding: 64px 0; }
+      .cta-mini span { display: none; }
+      .omni { display: none; }
+      .sim-view { height: 400px; }
+      .sim-mosaic { grid-template-columns: 1fr 1fr; padding: 22px 14px 18px; }
+      .sim-article { padding: 26px 20px; }
+    }
+  </style>
+  <script>
+    /* Langue avant premier rendu : choix manuel mémorisé > détection navigateur.
+       Parcourt navigator.languages dans l'ordre des préférences ; défaut FR.
+       La classe lang-en bascule le CSS i18n sans aucun flash. */
+    (function () {
+      var lang = null;
+      try { lang = localStorage.getItem('pknt-lang'); } catch (e) {}
+      if (lang !== 'fr' && lang !== 'en') {
+        var list = (navigator.languages && navigator.languages.length)
+          ? navigator.languages
+          : [navigator.language || 'fr'];
+        for (var i = 0; i < list.length; i++) {
+          var n = String(list[i] || '').toLowerCase().split('-')[0];
+          if (n === 'fr' || n === 'en') { lang = n; break; }
+        }
+      }
+      if (lang !== 'en') lang = 'fr';
+      if (lang === 'en') document.documentElement.classList.add('lang-en');
+      document.documentElement.lang = lang;
+      /* noreveal : rendu statique complet (captures, tests headless) */
+      if (!/[?&]noreveal/.test(location.search)) document.documentElement.classList.add('js');
+    })();
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="#top">
+        <img src="assets/logo.png" alt="Logo PK New Tab" data-fr="Logo PK New Tab" data-en="PK New Tab logo">
+        <span class="i18n"><span class="fr">PK New Tab</span><span class="en">PK New Tab</span></span>
+      </a>
+      <div class="spacer"></div>
+      <div class="lang-switch" role="group" aria-label="Langue / Language">
+        <button type="button" id="btn-fr" aria-pressed="true" data-fr="Français" data-en="French">FR</button>
+        <button type="button" id="btn-en" aria-pressed="false" data-fr="Anglais" data-en="English">EN</button>
+      </div>
+      <a class="cta-mini" href="https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd">
+        <span class="i18n"><span class="fr">Ajouter à Chrome</span><span class="en">Add to Chrome</span></span>
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ————————— Hero + démo interactive ————————— -->
+    <div class="hero">
+      <div class="wrap">
+        <p class="eyebrow">
+          <span class="i18n"><span class="fr">Extension Chrome · Gratuit</span><span class="en">Chrome extension · Free</span></span>
+        </p>
+        <h1 class="reveal">
+          <span class="i18n">
+            <span class="fr">Chaque nouvel onglet, un nouvel <em>outil</em> à découvrir.</span>
+            <span class="en">Every new tab, a new <em>tool</em> to discover.</span>
+          </span>
+        </h1>
+        <p class="lede reveal">
+          <span class="i18n">
+            <span class="fr">PK New Tab remplace votre page « nouvel onglet » par la mosaïque des derniers outils et pépites dénichés sur <a href="https://mondary.design">mondary.design</a>. Surveillez, cliquez, lisez — et retournez travailler.</span>
+            <span class="en">PK New Tab turns your new tab page into a mosaic of the latest tools and finds from <a href="https://mondary.design">mondary.design</a>. Browse, click, read — then get back to work.</span>
+          </span>
+        </p>
+        <div class="hero-ctas reveal">
+          <a class="cta" href="https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd">
+            <svg width="21" height="21" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="#fff" stroke-width="5"/><circle cx="24" cy="24" r="8" fill="#fff"/><path d="M24 2v10M24 36v10M2 24h10M36 24h10" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>
+            <span class="i18n"><span class="fr">Ajouter à Chrome</span><span class="en">Add to Chrome</span></span>
+          </a>
+          <span class="cta-note">
+            <span class="i18n"><span class="fr">Gratuit · v2.1.3 · aucune donnée collectée</span><span class="en">Free · v2.1.3 · no data collected</span></span>
+          </span>
+        </div>
+        <p class="sig reveal">
+          <span class="i18n">
+            <span class="fr">Par Clement MONDARY — « Chercheur de pépites sur le net »</span>
+            <span class="en">By Clement MONDARY — “hunting down the web's hidden gems”</span>
+          </span>
+        </p>
+
+        <!-- Démo : navigateur simulé, pilotable -->
+        <div class="stage reveal" id="sim">
+          <div class="sim">
+            <div class="sim-bar">
+              <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+              <div class="sim-tabs" id="sim-tabs">
+                <span class="sim-tab" id="sim-tab-newtab">
+                  <span class="i18n"><span class="fr">Nouvel onglet</span><span class="en">New tab</span></span>
+                </span>
+              </div>
+              <button type="button" class="sim-newtab" id="sim-newtab" aria-label="Ouvrir un nouvel onglet (rejouer la démo)" data-fr="Ouvrir un nouvel onglet (rejouer la démo)" data-en="Open a new tab (replay the demo)" title="Nouvel onglet">+</button>
+              <div class="omni" aria-hidden="true"></div>
+            </div>
+            <div class="sim-view" id="sim-view">
+              <!-- Sans JS : capture réelle de l'extension (poster honnête) -->
+              <img class="sim-shot" id="sim-poster"
+                   src="screenshots/newtab-mosaic-1280x800@2x.png"
+                   alt="Mosaïque des derniers outils de mondary.design dans un nouvel onglet Chrome"
+                   data-fr="Mosaïque des derniers outils de mondary.design dans un nouvel onglet Chrome"
+                   data-en="Mosaic of the latest mondary.design tools inside a Chrome new tab">
+              <noscript><img class="sim-shot" src="gifs/newtab-demo-640x400.gif" alt=""></noscript>
+            </div>
+          </div>
+          <p class="stage-hint">
+            <span class="i18n">
+              <span class="fr">Démo interactive — survolez les cartes, cliquez pour ouvrir un article, ou pressez « + » pour ouvrir un nouvel onglet.</span>
+              <span class="en">Interactive demo — hover the cards, click to open an article, or press “+” to open a new tab.</span>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ————————— Le cycle ————————— -->
+    <section class="alt">
+      <div class="wrap">
+        <h2 class="reveal">
+          <span class="i18n">
+            <span class="fr">Un nouvel onglet, trois temps.</span>
+            <span class="en">One new tab, three beats.</span>
+          </span>
+        </h2>
+        <p class="section-sub reveal">
+          <span class="i18n">
+            <span class="fr">Le vrai parcours, capturé depuis l'extension : le balayage, la mosaïque, la découverte qui s'ouvre.</span>
+            <span class="en">The real journey, captured from the extension: the sweep, the mosaic, the find opening up.</span>
+          </span>
+        </p>
+        <div class="cycle">
+          <figure class="state reveal">
+            <img src="screenshots/newtab-loading-1280x800.png"
+                 alt="Écran de chargement avec le mot LOADING qui s'écrit lettre par lettre"
+                 data-fr="Écran de chargement avec le mot LOADING qui s'écrit lettre par lettre"
+                 data-en="Loading screen with the word LOADING spelled out letter by letter">
+            <figcaption>
+              <span class="k">1</span>
+              <span class="t"><span class="i18n"><span class="fr">Le balayage</span><span class="en">The sweep</span></span></span>
+              <p class="d"><span class="i18n"><span class="fr">« LOADING » s'écrit lettre par lettre, le temps de rapatrier les découvertes.</span><span class="en">“LOADING” types itself while the latest finds are fetched.</span></span></p>
+            </figcaption>
+          </figure>
+          <figure class="state reveal">
+            <img src="screenshots/newtab-mosaic-1280x800.png"
+                 alt="Mosaïque des derniers outils en trois colonnes de cartes"
+                 data-fr="Mosaïque des derniers outils en trois colonnes de cartes"
+                 data-en="Mosaic of the latest tools as three columns of cards">
+            <figcaption>
+              <span class="k">2</span>
+              <span class="t"><span class="i18n"><span class="fr">La mosaïque</span><span class="en">The mosaic</span></span></span>
+              <p class="d"><span class="i18n"><span class="fr">15 découvertes s'affichent, vignettes en haute qualité comprises.</span><span class="en">15 finds appear, high-quality thumbnails included.</span></span></p>
+            </figcaption>
+          </figure>
+          <figure class="state reveal">
+            <img src="screenshots/newtab-hover-1280x800.png"
+                 alt="Une carte se soulève au survol, prête à ouvrir l'article de l'outil"
+                 data-fr="Une carte se soulève au survol, prête à ouvrir l'article de l'outil"
+                 data-en="A card lifts on hover, ready to open the tool's article">
+            <figcaption>
+              <span class="k">3</span>
+              <span class="t"><span class="i18n"><span class="fr">La découverte</span><span class="en">The find</span></span></span>
+              <p class="d"><span class="i18n"><span class="fr">Une carte se soulève, un clic ouvre l'article dans un nouvel onglet.</span><span class="en">A card lifts, one click opens the article in a new tab.</span></span></p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ————————— Fonctionnalités ————————— -->
+    <section>
+      <div class="wrap">
+        <h2 class="reveal">
+          <span class="i18n">
+            <span class="fr">Le raccourci vers les pépites.</span>
+            <span class="en">The shortcut to the gems.</span>
+          </span>
+        </h2>
+        <ul class="feat">
+          <li class="reveal">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4L12 3Z"/><path d="M19 15.5l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9.9-2.6Z"/></svg>
+            <div>
+              <span class="t"><span class="i18n"><span class="fr">15 découvertes à chaque onglet</span><span class="en">15 finds on every tab</span></span></span>
+              <span class="d"><span class="i18n"><span class="fr">Les derniers outils testés et approuvés par mondary.design, rafraîchis automatiquement.</span><span class="en">The latest tools tried and approved by mondary.design, refreshed automatically.</span></span></span>
+            </div>
+          </li>
+          <li class="reveal">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.6" cy="9.6" r="1.9"/><path d="M3.5 17.5 9 12.5l4 3.5 3.5-3 4 3.5"/></svg>
+            <div>
+              <span class="t"><span class="i18n"><span class="fr">Vignettes haute qualité</span><span class="en">High-quality thumbnails</span></span></span>
+              <span class="d"><span class="i18n"><span class="fr">L'image à la une de chaque article, choisie dans la meilleure taille disponible.</span><span class="en">Each article's featured image, picked from the best size available.</span></span></span>
+            </div>
+          </li>
+          <li class="reveal">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M18 13.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H11"/></svg>
+            <div>
+              <span class="t"><span class="i18n"><span class="fr">Un clic, l'article s'ouvre</span><span class="en">One click, the article opens</span></span></span>
+              <span class="d"><span class="i18n"><span class="fr">Chaque carte ouvre l'article complet dans un nouvel onglet — votre mosaïque reste en place.</span><span class="en">Every card opens the full article in a new tab — your mosaic stays put.</span></span></span>
+            </div>
+          </li>
+          <li class="reveal">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m9 11.5 2.2 2.2L15.5 9.5"/></svg>
+            <div>
+              <span class="t"><span class="i18n"><span class="fr">Fiable et respectueuse</span><span class="en">Reliable and private</span></span></span>
+              <span class="d"><span class="i18n"><span class="fr">Double source (API WordPress puis flux RSS), aucune publicité, aucune donnée collectée.</span><span class="en">Dual source (WordPress API then RSS feed), no ads, no data collected.</span></span></span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ————————— Installation ————————— -->
+    <section class="alt">
+      <div class="wrap">
+        <h2 class="reveal">
+          <span class="i18n">
+            <span class="fr">Prêt en moins d'une minute.</span>
+            <span class="en">Ready in under a minute.</span>
+          </span>
+        </h2>
+        <div class="install-grid">
+          <div class="store-card reveal">
+            <span class="t" style="font-weight:700;font-size:18px;display:block;">
+              <span class="i18n"><span class="fr">Depuis le Chrome Web Store</span><span class="en">From the Chrome Web Store</span></span>
+            </span>
+            <p style="margin-top:8px;font-size:15px;color:var(--ink-2);">
+              <span class="i18n">
+                <span class="fr">Un clic, et chaque nouvel onglet devient votre vitrine à outils. Version 2.1.3.</span>
+                <span class="en">One click, and every new tab becomes your tool shelf. Version 2.1.3.</span>
+              </span>
+            </p>
+            <a class="cta" href="https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd">
+              <svg width="21" height="21" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="#fff" stroke-width="5"/><circle cx="24" cy="24" r="8" fill="#fff"/><path d="M24 2v10M24 36v10M2 24h10M36 24h10" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>
+              <span class="i18n"><span class="fr">Ajouter à Chrome</span><span class="en">Add to Chrome</span></span>
+            </a>
+            <p class="store-meta">
+              <span class="i18n"><span class="fr">Gratuit · Manifest V3 · français</span><span class="en">Free · Manifest V3 · French</span></span>
+            </p>
+          </div>
+          <div class="dev-card reveal">
+            <span class="t"><span class="i18n"><span class="fr">Installer la version développeur</span><span class="en">Install the developer build</span></span></span>
+            <ol>
+              <li><code>chrome://extensions</code></li>
+              <li><span class="i18n"><span class="fr">Activer le <strong>Mode développeur</strong></span><span class="en">Enable <strong>Developer mode</strong></span></span></li>
+              <li><span class="i18n"><span class="fr">« Charger l'extension non empaquetée »</span><span class="en">“Load unpacked”</span></span></li>
+              <li><span class="i18n"><span class="fr">Sélectionner le dossier <code>src/</code> du dépôt</span><span class="en">Select the repo's <code>src/</code> folder</span></span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ————————— Soutien ————————— -->
+    <section class="support">
+      <div class="wrap">
+        <h2 class="reveal">
+          <span class="i18n">
+            <span class="fr">Gratuit, sans pub. Soutenez-le.</span>
+            <span class="en">Free, ad-free. Support it.</span>
+          </span>
+        </h2>
+        <p class="section-sub reveal">
+          <span class="i18n">
+            <span class="fr">PK New Tab ne collecte aucune donnée et n'affiche aucune publicité. Si la chasse aux pépites vous est utile, un café suffit à faire vivre le projet.</span>
+            <span class="en">PK New Tab collects no data and shows no ads. If the gem hunt is useful to you, a coffee keeps it going.</span>
+          </span>
+        </p>
+        <a class="kofi reveal" href="https://ko-fi.com/pouark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#29abe0" aria-hidden="true"><path d="M4 9h13v3a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M17 9.5h1.6a2.3 2.3 0 1 1 0 4.6H17"/><path d="M6 3.2c.5.4.8 1 .8 1.6M9.5 3.2c.5.4.8 1 .8 1.6M13 3.2c.5.4.8 1 .8 1.6" stroke="#29abe0" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+          <span class="i18n"><span class="fr">Offrir un café sur Ko-fi</span><span class="en">Buy a coffee on Ko-fi</span></span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 Clement MONDARY · PK-Labs · <span class="i18n"><span class="fr">captures issues de l'extension réelle v2.1.3</span><span class="en">screenshots from the real extension v2.1.3</span></span></div>
+      <div class="links">
+        <a href="https://mondary.design">mondary.design</a>
+        <a href="https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd">
+          <span class="i18n"><span class="fr">Fiche Chrome Web Store</span><span class="en">Chrome Web Store listing</span></span>
+        </a>
+        <a href="https://mondary.github.io/Chrome_PKnewTab/store/privacy-policy-mondary-new-tab.html">
+          <span class="i18n"><span class="fr">Confidentialité</span><span class="en">Privacy policy</span></span>
+        </a>
+        <a href="https://ko-fi.com/pouark">Ko-fi</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var doc = document.documentElement;
+
+      /* ————— Bascule FR / EN (choix manuel prioritaire, mémorisé) ————— */
+      var TITLES = {
+        fr: 'PK New Tab — Chaque nouvel onglet, un nouvel outil à découvrir',
+        en: 'PK New Tab — Every new tab, a new tool to discover'
+      };
+      function setLang(lang, save) {
+        var en = lang === 'en';
+        doc.classList.toggle('lang-en', en);
+        doc.lang = lang;
+        document.title = TITLES[lang];
+        document.getElementById('btn-fr').setAttribute('aria-pressed', String(!en));
+        document.getElementById('btn-en').setAttribute('aria-pressed', String(en));
+        var nodes = document.querySelectorAll('[data-fr]');
+        for (var i = 0; i < nodes.length; i++) {
+          var v = nodes[i].getAttribute(en ? 'data-en' : 'data-fr');
+          if (v) {
+            if (nodes[i].hasAttribute('alt')) nodes[i].setAttribute('alt', v);
+            if (nodes[i].hasAttribute('aria-label')) nodes[i].setAttribute('aria-label', v);
+          }
+        }
+        if (save) { try { localStorage.setItem('pknt-lang', lang); } catch (e) {} }
+      }
+      var current = doc.classList.contains('lang-en') ? 'en' : 'fr';
+      setLang(current, false);
+      document.getElementById('btn-fr').addEventListener('click', function () { setLang('fr', true); });
+      document.getElementById('btn-en').addEventListener('click', function () { setLang('en', true); });
+
+      /* ————— Reveal au scroll ————— */
+      var revealables = document.querySelectorAll('.reveal');
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      /* ————— Démo interactive : moteur ————— */
+      // Mêmes données fictives que la scène de capture (store/media-kit/)
+      function thumb(i) {
+        var palettes = [
+          ['#0d1520', '#1c3145', '#5f8ba1'],
+          ['#f4efe8', '#e0d3c0', '#b3a288'],
+          ['#e9f1ee', '#cfdedb', '#7fa39a'],
+          ['#151a22', '#2a3442', '#8b98ab'],
+          ['#f2eef4', '#ddd2e2', '#a894b3']
+        ];
+        var shapes = [
+          function (p) { return '<circle cx="250" cy="200" r="120" fill="' + p[1] + '"/><circle cx="430" cy="330" r="70" fill="' + p[2] + '" opacity="0.6"/>'; },
+          function (p) { return '<rect x="140" y="120" width="220" height="220" rx="28" fill="' + p[1] + '"/><rect x="400" y="260" width="150" height="150" rx="22" fill="' + p[2] + '" opacity="0.55"/>'; },
+          function (p) { return '<path d="M120 340 Q 300 90 480 340" fill="none" stroke="' + p[2] + '" stroke-width="46" stroke-linecap="round"/><circle cx="300" cy="150" r="44" fill="' + p[1] + '"/>'; },
+          function (p) { return '<rect x="120" y="110" width="380" height="60" rx="30" fill="' + p[1] + '"/><rect x="120" y="200" width="290" height="60" rx="30" fill="' + p[2] + '" opacity="0.7"/><rect x="120" y="290" width="190" height="60" rx="30" fill="' + p[1] + '"/>'; },
+          function (p) { return '<circle cx="200" cy="220" r="110" fill="' + p[2] + '" opacity="0.5"/><path d="M330 340 L 470 140" stroke="' + p[2] + '" stroke-width="34" stroke-linecap="round"/>'; }
+        ];
+        var p = palettes[i % palettes.length];
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 600 420">' +
+          '<rect width="600" height="420" fill="' + p[0] + '"/>' + shapes[i % shapes.length](p) + '</svg>';
+        return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      }
+
+      var DEMO = [
+        ['PAPERSHIFT', 'PAPERSHIFT : vos documents s\u2019organisent tout seuls dans le Finder', '2026-10-02', 'PAPERSHIFT surveille vos dossiers et range automatiquement factures, captures et PDF au bon endroit. Gratuit et open source, sur macOS 12 et plus.'],
+        ['TILEFLOW', 'TILEFLOW : vos fen\u00eatres se rangent au clavier, sans souris', '2026-09-30', 'TILEFLOW colle, redimensionne et envoie vos fen\u00eatres d\u2019un raccourci. Les grilles se rappellent de votre \u00e9cran, pas l\u2019inverse.'],
+        ['LUMEN TAB', 'LUMEN TAB : la lumi\u00e8re de votre Mac suit le soleil de votre ville', '2026-09-28', 'LUMEN TAB ajuste la temp\u00e9rature et la luminosit\u00e9 selon l\u2019heure r\u00e9elle chez vous.'],
+        ['CLIPSTACK', 'CLIPSTACK : l\u2019historique du presse-papiers enfin cherchable', '2026-09-26', 'CLIPSTACK garde tout ce que vous copiez, le trie par app et le retrouve en trois lettres. Local, chiffr\u00e9, jamais envoy\u00e9 nulle part.'],
+        ['GRIDPEEK', 'GRIDPEEK : zoomez dans n\u2019importe quelle image sans l\u2019ouvrir', '2026-09-24', 'GRIDPEEK ajoute un zoom loupe \u00e0 l\u2019aper\u00e7u Quick Look. Id\u00e9al pour lire une capture dense.'],
+        ['SPOTLOG', 'SPOTLOG : cherchez dans tous vos journaux syst\u00e8me en une seconde', '2026-09-22', 'SPOTLOG indexe les logs de votre Mac et r\u00e9pond instantan\u00e9ment, en langage naturel.'],
+        ['FOLDSTAR', 'FOLDSTAR : marquez vos dossiers importants d\u2019une \u00e9toile', '2026-09-20', 'FOLDSTAR \u00e9pingle vos dossiers de travail dans la barre lat\u00e9rale du Finder.'],
+        ['VANISH', 'VANISH : masquez le bureau pendant vos partages d\u2019\u00e9cran', '2026-09-18', 'VANISH cache ic\u00f4nes et notifications d\u00e8s qu\u2019un partage d\u2019\u00e9cran d\u00e9marre.'],
+        ['NETPULSE', 'NETPULSE : la vitesse de votre connexion, dans la barre de menus', '2026-09-16', 'NETPULSE affiche ping et d\u00e9bit en continu et signale les chutes avant la visio.'],
+        ['DRIFTNOTE', 'DRIFTNOTE : une note qui flotte toujours au-dessus de vos fen\u00eatres', '2026-09-14', 'DRIFTNOTE garde un pense-b\u00eate visible en toutes circonstances.'],
+        ['PALETTEJET', 'PALETTEJET : pipettez n\u2019importe quelle couleur \u00e0 l\u2019\u00e9cran', '2026-09-12', 'PALETTEJET capture la couleur exacte d\u2019un pixel et la colle en hex, RGB ou Swift.'],
+        ['SYNCWARD', 'SYNCWARD : un \u0153il sur l\u2019\u00e9tat de tous vos disques et clouds', '2026-09-10', 'SYNCWARD r\u00e9unit espace, synchronisation et sauvegardes dans un seul indicateur.'],
+        ['TINYRUN', 'TINYRUN : lancez vos scripts sans ouvrir un terminal', '2026-09-08', 'TINYRUN ex\u00e9cute vos commandes pr\u00e9f\u00e9r\u00e9es depuis la barre de menus.'],
+        ['ECHOFEED', 'ECHOFEED : vos flux RSS tri\u00e9s \u00e0 la main, chaque matin', '2026-09-06', 'ECHOFEED passe au crible vos flux et ne garde que cinq liens par jour.'],
+        ['SHADOWGIT', 'SHADOWGIT : voyez d\u2019un coup d\u2019\u0153il ce qui a chang\u00e9 dans vos d\u00e9p\u00f4ts', '2026-09-04', 'SHADOWGIT r\u00e9sume commits, branches et pulls dans la barre de menus.']
+      ];
+
+      var view = document.getElementById('sim-view');
+      var poster = document.getElementById('sim-poster');
+      var tabs = document.getElementById('sim-tabs');
+      var tabNew = document.getElementById('sim-tab-newtab');
+      var btnNew = document.getElementById('sim-newtab');
+      if (!view || !btnNew) return;
+      var hidePoster = function () { poster.style.display = 'none'; };
+
+      var LOADING_MS = 1400;
+      var timers = [];
+
+      function clearSim() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        view.querySelectorAll('.sim-loading, .sim-mosaic, .sim-article').forEach(function (n) { n.remove(); });
+      }
+
+      function fmtDate(iso) {
+        var d = new Date(iso + 'T09:00:00');
+        try {
+          return new Intl.DateTimeFormat(doc.lang === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+        } catch (e) { return iso; }
+      }
+
+      function buildMosaic() {
+        var m = document.createElement('div');
+        m.className = 'sim-mosaic';
+        m.setAttribute('role', 'list');
+        var logo = document.createElement('img');
+        logo.src = 'assets/logo.png';
+        logo.alt = '';
+        logo.className = 'sim-logo';
+        logo.setAttribute('aria-hidden', 'true');
+        m.appendChild(logo);
+        DEMO.forEach(function (item, i) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'sim-card';
+          b.setAttribute('role', 'listitem');
+          b.setAttribute('aria-label', (doc.lang === 'en' ? 'Open article: ' : 'Ouvrir l\u2019article : ') + item[1]);
+          b.innerHTML = '<img src="' + thumb(i) + '" alt="" loading="lazy"><span class="c"><span class="t"></span><span class="d">' +
+            fmtDate(item[2]) + '</span><span class="e"></span></span>';
+          b.querySelector('.t').textContent = item[1];
+          b.querySelector('.e').textContent = item[3];
+          b.addEventListener('click', function () { openArticle(i); });
+          m.appendChild(b);
+        });
+        return m;
+      }
+
+      function showMosaic(animate) {
+        clearSim();
+        hidePoster();
+        var m = buildMosaic();
+        view.appendChild(m);
+        if (animate && !reduced.matches) {
+          m.classList.add('play');
+          m.querySelectorAll('.sim-card').forEach(function (c, i) {
+            c.style.animationDelay = (i * 35) + 'ms';
+          });
+        } else {
+          m.querySelectorAll('.sim-card').forEach(function (c) { c.style.opacity = 1; c.style.transform = 'none'; });
+        }
+      }
+
+      function showLoading(then) {
+        clearSim();
+        var l = document.createElement('div');
+        l.className = 'sim-loading';
+        l.setAttribute('aria-hidden', 'true');
+        'LOADING'.split('').forEach(function (ch, i) {
+          var s = document.createElement('span');
+          s.textContent = ch;
+          s.style.animationDelay = (i * 0.2) + 's';
+          l.appendChild(s);
+        });
+        view.appendChild(l);
+        if (reduced.matches) { then(); return; }
+        l.classList.add('play');
+        timers.push(setTimeout(then, LOADING_MS));
+      }
+
+      var tabArticle = null;
+
+      function openArticle(i) {
+        var item = DEMO[i];
+        clearSim();
+        hidePoster();
+        var a = document.createElement('div');
+        a.className = 'sim-article';
+        a.setAttribute('role', 'article');
+        var meta = document.createElement('p');
+        meta.className = 'meta';
+        meta.textContent = fmtDate(item[2]) + ' · mondary.design';
+        var h = document.createElement('h3');
+        h.textContent = item[1];
+        var img = document.createElement('img');
+        img.src = thumb(i);
+        img.alt = '';
+        var p = document.createElement('p');
+        p.textContent = item[3];
+        var note = document.createElement('p');
+        note.className = 'note';
+        note.innerHTML = '<span class="i18n"><span class="fr">Aperçu simul\u00e9 — l\u2019extension r\u00e9elle ouvre l\u2019article complet sur </span><span class="en">Simulated preview — the real extension opens the full article on </span></span><a href="https://mondary.design">mondary.design</a>.';
+        a.appendChild(meta); a.appendChild(h); a.appendChild(img); a.appendChild(p); a.appendChild(note);
+        view.appendChild(a);
+        /* onglet de l'article dans la barre du navigateur simulé */
+        if (tabArticle) tabArticle.remove();
+        tabArticle = document.createElement('span');
+        tabArticle.className = 'sim-tab';
+        var label = document.createElement('span');
+        label.textContent = item[0];
+        label.style.overflow = 'hidden';
+        label.style.textOverflow = 'ellipsis';
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'close';
+        close.textContent = '\u00d7';
+        close.setAttribute('aria-label', doc.lang === 'en' ? 'Close tab' : 'Fermer l\u2019onglet');
+        close.addEventListener('click', function () {
+          tabArticle.remove(); tabArticle = null;
+          showMosaic(false);
+        });
+        tabArticle.appendChild(label);
+        tabArticle.appendChild(close);
+        tabs.appendChild(tabArticle);
+        close.focus({ preventScroll: true });
+      }
+
+      function runCycle() {
+        if (tabArticle) { tabArticle.remove(); tabArticle = null; }
+        if (reduced.matches) { showMosaic(false); return; }
+        showLoading(function () { showMosaic(true); });
+      }
+
+      btnNew.addEventListener('click', runCycle);
+
+      /* Auto-démarre une fois visible ; le poster honnête reste sinon */
+      if ('IntersectionObserver' in window && !reduced.matches) {
+        var started = false;
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting && !started) {
+              started = true;
+              io.disconnect();
+              runCycle();
+            }
+          });
+        }, { threshold: 0.35 });
+        io.observe(view);
+      }
+
+      if ('IntersectionObserver' in window && !reduced.matches) {
+        var ro = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in');
+              ro.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealables.forEach(function (el) { ro.observe(el); });
+      } else {
+        revealables.forEach(function (el) { el.classList.add('in'); });
+      }
+    })();
+  </script>
+</body>
+</html>

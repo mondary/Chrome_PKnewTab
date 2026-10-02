@@ -1,0 +1,32 @@
+{
+  "produit": "PK New Tab (extension Chrome) v2.1.3",
+  "captures": {
+    "source": "store/media-kit/capture-scene.html — code de production src/newtab.css + src/newtab.js, 15 outils fictifs au format éditorial réel (vignettes SVG data-URI)",
+    "fonds": "voir wallpaper ci-dessous"
+  },
+  "wallpaper": {
+    "id": "74c0f12608ce",
+    "sha256": "74c0f12608cea3b2… (vérifié intégral lors de la copie)",
+    "source": "file_00000000463481f494cb8e82223bf96f.png — bibliothèque commune appWall du hub (skills/pk/premium-promo-media)",
+    "categorie": "abstract, tone dark, contains_ui: false",
+    "palette": ["#020202", "#0a0c12", "#182131", "#2b425a", "#5f8ba1"],
+    "cadrage": "center 38% (hero) / center 62% (bandeau soutien), cover",
+    "derive": "assets/wallpapers/hero-bg.jpg = original 1672x941 + boxblur 2:2, JPEG q8 (98 Ko) — arrière-plan uniquement, jamais présenté comme capture de l'application",
+    "original_conserve": "assets/wallpapers/74c0f12608ce.png (741 Ko, intouché)"
+  },
+  "police": {
+    "Outfit variable (latin + latin-ext)": {
+      "provenance": "Google Fonts https://fonts.gstatic.com/s/outfit/v15/",
+      "licence": "SIL Open Font License 1.1",
+      "fichiers": ["assets/fonts/outfit-var.woff2", "assets/fonts/outfit-var-ext.woff2"]
+    }
+  },
+  "logo": "copie de src/logo.png (512x512)",
+  "liens_verifies_le": "2026-10-02",
+  "liens": {
+    "chrome_web_store": "https://chromewebstore.google.com/detail/mondary-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd (v2.1.3 confirmée)",
+    "mondary_design": "https://mondary.design (HTTP 200, positionnement vérifié : « Chercheur de pépites sur le net », articles au format « OUTIL : bénéfice »)",
+    "privacy": "https://mondary.github.io/Chrome_PKnewTab/store/privacy-policy-mondary-new-tab.html (HTTP 200)",
+    "ko_fi": "https://ko-fi.com/pouark (actif — bloque curl, vérifié via fetch)"
+  }
+}

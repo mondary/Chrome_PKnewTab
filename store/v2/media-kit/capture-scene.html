@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<!--
+  Scène de capture — PK New Tab v2.1.3
+  Réutilise le code de PRODUCTION inchangé :
+    - ../../../src/newtab.css (styles réels)
+    - ../../../src/newtab.js  (moteur de rendu réel)
+  Seuls ponts de capture (documentés dans README.md) :
+    - mock de chrome.runtime.sendMessage → 15 articles fictifs (SVG data-URI)
+    - délai réseau simulé, gel d'animation déterministe, hover simulé, curseur démo
+  Paramètres d'URL :
+    ?mode=loading&at=300        gèle l'écran LOADING à 300 ms (lettre i visible si at > i*200)
+    ?mode=cards&delay=600&at=400  gèle les cartes à 400 ms après leur apparition
+    ?hover=1                    simule le survol de la carte n°1 (règle :hover de production)
+    ?cursor=640,590             affiche un curseur de démonstration à x,y
+    ?probe=1                    expose la position de la carte hover dans <title> (dump-dom)
+-->
+<html lang="fr">
+<head>
+  <title>Mondary News Mosaic</title>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../src/newtab.css">
+  <style>
+    /* Copie exacte de la règle :hover de production (src/newtab.css),
+       exposée sous une classe pour simulation hors souris.
+       animation:none + opacity:1 neutralisent le fill forwards de fadeInUp,
+       qui sinon écraserait le transform inline/derived (cascade animations). */
+    .news-item.demo-hover {
+      animation: none;
+      opacity: 1;
+      transform: translateY(-5px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: none; /* état final figé pour la capture */
+    }
+    /* Curseur de démonstration (n'existe pas dans le produit) */
+    .demo-cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 2000;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .demo-cursor svg { display: block; }
+    .demo-cursor.pressed svg {
+      transform: scale(0.82);
+      transform-origin: 4px 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <a href="https://mondary.design" target="_blank">
+      <img src="logo.png" alt="Logo" class="logo">
+    </a>
+  </div>
+  <div id="news-container" class="mosaic-grid">
+    <div class="loading">...</div>
+  </div>
+  <footer class="custom-footer">
+    <div class="footer-mask"></div>
+    <div class="footer-text">© 2025 Clement MONDARY</div>
+  </footer>
+
+  <script>
+  /* ------------------------------------------------------------------ */
+  /* 1. Fixture : 15 articles 100 % fictifs (aucune donnée réelle)       */
+  /* ------------------------------------------------------------------ */
+  function thumb(i) {
+    // Vignettes SVG sobres et variées — aucune ressource réseau
+    const palettes = [
+      ['#0d1520', '#1c3145', '#5f8ba1'],  // bleu acier
+      ['#f4efe8', '#e0d3c0', '#b3a288'],  // papier chaud
+      ['#e9f1ee', '#cfdedb', '#7fa39a'],  // vert minéral
+      ['#151a22', '#2a3442', '#8b98ab'],  // ardoise
+      ['#f2eef4', '#ddd2e2', '#a894b3']   // lavande pâle
+    ];
+    const shapes = [
+      (p) => `<circle cx="250" cy="200" r="120" fill="${p[1]}"/><circle cx="430" cy="330" r="70" fill="${p[2]}" opacity="0.6"/>`,
+      (p) => `<rect x="140" y="120" width="220" height="220" rx="28" fill="${p[1]}"/><rect x="400" y="260" width="150" height="150" rx="22" fill="${p[2]}" opacity="0.55"/>`,
+      (p) => `<path d="M120 340 Q 300 90 480 340" fill="none" stroke="${p[2]}" stroke-width="46" stroke-linecap="round"/><circle cx="300" cy="150" r="44" fill="${p[1]}"/>`,
+      (p) => `<rect x="120" y="110" width="380" height="60" rx="30" fill="${p[1]}"/><rect x="120" y="200" width="290" height="60" rx="30" fill="${p[2]}" opacity="0.7"/><rect x="120" y="290" width="190" height="60" rx="30" fill="${p[1]}"/>`,
+      (p) => `<circle cx="200" cy="220" r="110" fill="${p[2]}" opacity="0.5"/><path d="M330 340 L 470 140" stroke="${p[2]}" stroke-width="34" stroke-linecap="round"/>`
+    ];
+    const p = palettes[i % palettes.length];
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 600 420">` +
+      `<rect width="600" height="420" fill="${p[0]}"/>${shapes[i % shapes.length](p)}</svg>`;
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+
+  // Fixtures au format éditorial réel de mondary.design : « OUTIL : le bénéfice ».
+  // Noms d'outils 100 % fictifs (aucun article réel).
+  const FIXTURES = [
+    ['PAPERSHIFT : vos documents s\u2019organisent tout seuls dans le Finder', '2026-10-02T09:00:00', 'PAPERSHIFT surveille vos dossiers et range automatiquement factures, captures et PDF au bon endroit. Gratuit et open source, sur macOS 12 et plus.'],
+    ['TILEFLOW : vos fen\u00eatres se rangent au clavier, sans souris', '2026-09-30T10:30:00', 'TILEFLOW colle, redimensionne et envoie vos fen\u00eatres d\u2019un raccourci. Les grilles se rappellent de votre \u00e9cran, pas l\u2019inverse.'],
+    ['LUMEN TAB : la lumi\u00e8re de votre Mac suit le soleil de votre ville', '2026-09-28T08:15:00', 'LUMEN TAB ajuste la temp\u00e9rature et la luminosit\u00e9 selon l\u2019heure r\u00e9elle chez vous. Plus de jaunisses surprises \u00e0 23 h.'],
+    ['CLIPSTACK : l\u2019historique du presse-papiers enfin cherchable', '2026-09-26T14:00:00', 'CLIPSTACK garde tout ce que vous copiez, le trie par app et le retrouve en trois lettres. Local, chiffr\u00e9, jamais envoy\u00e9 nulle part.'],
+    ['GRIDPEEK : zoomez dans n\u2019importe quelle image sans l\u2019ouvrir', '2026-09-24T09:45:00', 'GRIDPEEK ajoute un zoom loupe \u00e0 l\u2019apper\u00e7u Quick Look. Id\u00e9al pour lire une capture dense sans ouvrir un seul logiciel.'],
+    ['SPOTLOG : cherchez dans tous vos journaux syst\u00e8me en une seconde', '2026-09-22T16:20:00', 'SPOTLOG indexe les logs de votre Mac et r\u00e9pond instantan\u00e9ment, en langage naturel. Les erreurs r\u00e9centes remontent toutes seules.'],
+    ['FOLDSTAR : marquez vos dossiers importants d\u2019une \u00e9toile', '2026-09-20T11:00:00', 'FOLDSTAR \u00e9pingle vos dossiers de travail dans la barre lat\u00e9rale du Finder, un par projet, et les fait briller quand ils attendent quelque chose.'],
+    ['VANISH : masquez le bureau pendant vos partages d\u2019\u00e9cran', '2026-09-18T09:30:00', 'VANISH cache ic\u00f4nes et notifications d\u00e8s qu\u2019un partage d\u2019\u00e9cran d\u00e9marre, et rend tout \u00e0 l\u2019identique \u00e0 la fin. Sans rien nettoyer.'],
+    ['NETPULSE : la vitesse de votre connexion, dans la barre de menus', '2026-09-16T15:10:00', 'NETPULSE affiche ping et d\u00e9bit en continu et signale les chutes avant que la visio ne le fasse. L\u00e9ger, open source, sans compte.'],
+    ['DRIFTNOTE : une note qui flotte toujours au-dessus de vos fen\u00eatres', '2026-09-14T10:00:00', 'DRIFTNOTE garde un pense-b\u00eate visible en toutes circonstances, minimisable d\u2019un clic. Le pense-b\u00eate qu\u2019on ne perd plus jamais.'],
+    ['PALETTEJET : pipettez n\u2019importe quelle couleur \u00e0 l\u2019\u00e9cran', '2026-09-12T13:40:00', 'PALETTEJET capture la couleur exacte d\u2019un pixel et la colle en hex, RGB ou Swift. L\u2019historique garde vos teintes de marque.'],
+    ['SYNCWARD : un \u0153il sur l\u2019\u00e9tat de tous vos disques et clouds', '2026-09-10T09:20:00', 'SYNCWARD r\u00e9unit espace, synchronisation et sauvegardes dans un seul indicateur. Il vous pr\u00e9vient avant que ce soit plein.'],
+    ['TINYRUN : lancez vos scripts sans ouvrir un terminal', '2026-09-08T17:00:00', 'TINYRUN ex\u00e9cute vos commandes pr\u00e9f\u00e9r\u00e9es depuis la barre de menus, avec notification de fin. Le terminal reste pour les vraies sessions.'],
+    ['ECHOFEED : vos flux RSS tri\u00e9s \u00e0 la main, chaque matin', '2026-09-06T10:50:00', 'ECHOFEED passe au crible vos flux et ne garde que cinq liens par jour, choisis pour vous. Z\u00e9ro algorithme opaque.'],
+    ['SHADOWGIT : voyez d\u2019un coup d\u2019\u0153il ce qui a chang\u00e9 dans vos d\u00e9p\u00f4ts', '2026-09-04T08:30:00', 'SHADOWGIT r\u00e9sume commits, branches et pulls en cours dans la barre de menus. Les oublis de push se voient imm\u00e9diatement.']
+  ].map((f, i) => ({
+    title: { rendered: f[0] },
+    date: f[1],
+    link: 'https://mondary.design/',
+    excerpt: { rendered: '<p>📌 ' + f[2] + '</p>' },
+    jetpack_featured_media_url: thumb(i)
+  }));
+
+  /* ------------------------------------------------------------------ */
+  /* 2. Mock du channel chrome.runtime (pont de capture)                 */
+  /*    En temps virtuel headless, un setTimeout posé après              */
+  /*    DOMContentLoaded ne tire jamais : la réponse est donc            */
+  /*    SYNCHRONE. L'écran LOADING s'obient en rendant le mock muet     */
+  /*    (mode=loading) — le produit reste inchangé.                      */
+  /* ------------------------------------------------------------------ */
+  const QS = new URLSearchParams(location.search);
+  const SILENT = QS.get('mode') === 'loading';
+
+  window.__t0 = 0;
+  window.__tCards = 0;
+  window.chrome = {
+    runtime: {
+      sendMessage: (msg, cb) => {
+        if (SILENT) return; // écran LOADING maintenu
+        cb({ success: true, data: FIXTURES, isRSS: false });
+      }
+    }
+  };
+
+  /* ------------------------------------------------------------------ */
+  /* 3. Horloge : t0 au DOMContentLoaded (avant newtab.js)               */
+  /* ------------------------------------------------------------------ */
+  document.addEventListener('DOMContentLoaded', () => { window.__t0 = performance.now(); });
+
+  // Instant de création réelle des cartes
+  new MutationObserver(() => {
+    if (!window.__tCards && document.querySelector('.news-item')) {
+      window.__tCards = performance.now();
+    }
+  }).observe(document.getElementById('news-container'), { childList: true });
+
+  /* ------------------------------------------------------------------ */
+  /* 4. Gel déterministe (arithmétique)                                  */
+  /*    En temps virtuel headless, le moteur d'animations CSS ne rend    */
+  /*    aucun état (animation pending = style de base, opacity:0).       */
+  /*    On calcule donc l'état à ?at= ms avec la vraie courbe « ease »   */
+  /*    (cubic-bezier(0.25, 0.1, 0.25, 1)) et on le pose inline avant    */
+  /*    le premier paint — zéro dépendance au moteur d'animations.       */
+  /* ------------------------------------------------------------------ */
+  function easeCSS(t) { // résout y pour x=t sur la bézier (0.25,0.1,0.25,1)
+    let lo = 0, hi = 1;
+    for (let k = 0; k < 40; k++) {
+      const mid = (lo + hi) / 2;
+      const x = 0.75 * mid * (1 - mid) + mid * mid * mid; // x(s), x1=x2=0.25
+      if (x < t) lo = mid; else hi = mid;
+    }
+    const s = (lo + hi) / 2;
+    return 0.3 * s * (1 - s) * (1 - s) + 3 * s * s * (1 - s) + s * s * s;
+  }
+
+  window.__freeze = () => {
+    const at = parseFloat(QS.get('at') || '0');
+    document.querySelectorAll('.news-item').forEach((el) => {
+      if (el.style.animation === 'none') return; // état déjà posé (survol)
+      const e = easeCSS(Math.min(1, Math.max(0, at / 600)));
+      el.style.animation = 'none';
+      el.style.opacity = String(e);
+      if (e < 1) el.style.transform = 'translateY(' + ((1 - e) * 20).toFixed(2) + 'px)';
+    });
+    document.querySelectorAll('.loading span').forEach((el) => {
+      const start = parseFloat(el.style.animationDelay || '0s') * 1000; // i × 200 ms
+      const e = easeCSS(Math.min(1, Math.max(0, (at - start) / 200)));
+      el.style.animation = 'none';
+      el.style.opacity = String(e);
+    });
+  };
+
+  /* ------------------------------------------------------------------ */
+  /* 5. Hover simulé + curseur démo + probe                              */
+  /* ------------------------------------------------------------------ */
+  document.addEventListener('DOMContentLoaded', () => {
+    if (QS.has('hover') || QS.has('lift')) {
+      const apply = () => {
+        const card = document.querySelectorAll('.news-item')[parseInt(QS.get('hover') || '1', 10)];
+        if (!card) return;
+        if (QS.has('hover')) card.classList.add('demo-hover');
+        // lift : interpolation manuelle de la règle :hover (max -5px / 0 4px 8px rgba(0,0,0,.2))
+        const n = parseFloat(QS.get('lift') || '0');
+        if (n > 0) {
+          card.style.animation = 'none'; // cf. commentaire CSS (fill forwards)
+          card.style.opacity = '1';
+          card.style.transform = `translateY(-${n}px)`;
+          card.style.boxShadow = `0 ${(n * 0.8).toFixed(1)}px ${(n * 1.6).toFixed(1)}px rgba(0,0,0,${(0.2 * n / 5).toFixed(3)})`;
+        }
+      };
+      const cards = document.querySelectorAll('.news-item');
+      if (cards.length) apply();
+      else new MutationObserver((_, obs) => {
+        if (document.querySelectorAll('.news-item').length) { apply(); obs.disconnect(); }
+      }).observe(document.getElementById('news-container'), { childList: true });
+    }
+
+    if (QS.has('cursor')) {
+      const [x, y] = QS.get('cursor').split(',').map(Number);
+      const cur = document.createElement('div');
+      cur.className = 'demo-cursor' + (QS.get('pressed') === '1' ? ' pressed' : '');
+      cur.innerHTML = '<svg width="30" height="36" viewBox="0 0 30 36">' +
+        '<path d="M3 1 L3 29 L10.5 22.5 L15.5 33.5 L20.5 31.5 L15.5 20.5 L25 20.5 Z" ' +
+        'fill="#1d1d1f" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+      cur.style.transform = `translate(${x - 3}px, ${y - 1}px)`;
+      document.body.appendChild(cur);
+    }
+
+    if (QS.get('probe') === '1') {
+      const report = () => {
+        const card = document.querySelectorAll('.news-item')[parseInt(QS.get('hover') || '1', 10)];
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        document.title = `PROBE ${Math.round(r.left + r.width / 2)},${Math.round(r.top + r.height / 2)}`;
+      };
+      const cards = document.querySelectorAll('.news-item');
+      if (cards.length) report();
+      else new MutationObserver((_, obs) => {
+        if (document.querySelectorAll('.news-item').length) { report(); obs.disconnect(); }
+      }).observe(document.getElementById('news-container'), { childList: true });
+    }
+  });
+  </script>
+  <!-- CORRIGÉ voir freeze arithmétique plus haut -->
+  <script src="../../../src/newtab.js"></script>
+  <script>
+  // Gel : déclenché en microtask dès la première mutation du conteneur
+  // (lettres LOADING ou cartes), donc avant le premier paint headless.
+  new MutationObserver(() => {
+    if (window.__freeze) window.__freeze();
+  }).observe(document.getElementById('news-container'), { childList: true, subtree: true });
+  </script>
+</body>
+</html>
