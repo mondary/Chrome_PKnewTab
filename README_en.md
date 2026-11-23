@@ -10,7 +10,7 @@ A beautiful way to start browsing — every new tab shows the latest articles fr
 
 [⭐ Install from the Chrome Web Store](https://chromewebstore.google.com/detail/pk-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd)
 
-**Version 2026.10.7** · free · no data collected
+**Version 2026.11.1** · free · no data collected
 
 </div>
 
@@ -35,7 +35,7 @@ It's free and safe — the extension collects no personal data.
 
 Just open a new Chrome tab and the latest mondary.design articles appear instantly. That's it!
 
-**Store page: [`store/website/`](store/website/)** — new bilingual FR/EN landing, editable source ready to deploy. [`store/v1/`](store/v1/) keeps the original kit; [`store/v2/`](store/v2/) keeps the previous landing and media kit. `scripts/website.sh` checks the folder without rewriting it.
+**Store page: [`store/website/`](store/website/)** — new bilingual FR/EN landing, editable source ready to deploy. [`store/v1/`](store/v1/) keeps the original kit; [`store/v2/`](store/v2/) keeps the previous landing and media kit; [`store/cws/`](store/cws/) holds the visuals ready for the Chrome Web Store listing. `scripts/website.sh` checks the folder without rewriting it.
 
 The landing includes a [tall new-tab screenshot with eight articles](store/website/screenshots/newtab-mosaic-1280x2050.png), regenerable via `python3 scripts/capture-newtab.py`. [Support the project on Ko-fi](https://ko-fi.com/pouark).
 
@@ -56,7 +56,7 @@ Create a release zip from `src/`:
 
 ```bash
 cd src
-zip -r ../release/NewTabRssMondary_v2026.10.7.zip . -x "*.DS_Store"
+zip -r ../release/PK-New-Tab-2026.11.1.zip . -x "*.DS_Store"
 ```
 
 ### Local installation (development)
@@ -67,6 +67,9 @@ zip -r ../release/NewTabRssMondary_v2026.10.7.zip . -x "*.DS_Store"
 5. Open a new tab to test
 
 ## 📝 Changelog
+
+### 2026.11.1 - 2026-11-23
+- Chrome Web Store media kit in `store/cws/` (icon, tile, marquee, 1280×800 screenshots)
 
 ### 2026.10.7 - 2026-10-02
 - Discreet Ko-fi link in the new tab footer

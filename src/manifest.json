@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PK New Tab",
-  "version": "2026.10.7",
+  "version": "2026.11.1",
   "description": "Latest design news from mondary.design. Made by PK-Labs.",
   "short_name": "PK-Labs Tab",
   "host_permissions": [

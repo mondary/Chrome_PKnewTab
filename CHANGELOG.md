@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026.11.1] - 2026-11-23
+### Added
+- Kit média Chrome Web Store dans `store/cws/` : icône 128×128, tuile 440×280, marquee 1400×560 et quatre captures 1280×800, avec `manifest.json` reliant chaque visuel à sa source.
+- `store/cws/README.md` documentant les formats, l'usage et l'état des captures.
+
+### Changed
+- Version du manifest en `2026.11.1` ; bandeau de version et commande de packaging synchronisés dans les README FR/EN.
+
 ## [2026.10.7] - 2026-10-02
 ### Added
 - Lien Ko-fi discret (`https://ko-fi.com/pouark`) dans le pied de page du nouvel onglet de l'extension ; capture de production régénérée avec le lien visible.

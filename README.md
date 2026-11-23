@@ -10,7 +10,7 @@ Une belle façon de commencer votre navigation sur le web — chaque nouvel ongl
 
 [⭐ Installer depuis le Chrome Web Store](https://chromewebstore.google.com/detail/pk-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd)
 
-**Version 2026.10.7** · gratuite · aucune donnée collectée
+**Version 2026.11.1** · gratuite · aucune donnée collectée
 
 </div>
 
@@ -36,7 +36,7 @@ C’est gratuit et sécurisé — l’extension ne collecte aucune donnée perso
 
 Ouvrez simplement un nouvel onglet Chrome, et vous verrez instantanément les derniers articles de mondary.design. C'est tout !
 
-**Page store : [`store/website/`](store/website/)** — nouvelle landing bilingue FR/EN, source éditable directement déployable. [`store/v1/`](store/v1/) conserve le kit historique ; [`store/v2/`](store/v2/) conserve la landing et le media-kit précédents. `scripts/website.sh` vérifie le dossier sans le réécrire.
+**Page store : [`store/website/`](store/website/)** — nouvelle landing bilingue FR/EN, source éditable directement déployable. [`store/v1/`](store/v1/) conserve le kit historique ; [`store/v2/`](store/v2/) conserve la landing et le media-kit précédents ; [`store/cws/`](store/cws/) regroupe les visuels prêts pour la fiche Chrome Web Store. `scripts/website.sh` vérifie le dossier sans le réécrire.
 
 La landing inclut une [capture haute du nouvel onglet avec huit articles](store/website/screenshots/newtab-mosaic-1280x2050.png), régénérable via `python3 scripts/capture-newtab.py`. [Soutenir le projet sur Ko-fi](https://ko-fi.com/pouark).
 
@@ -57,7 +57,7 @@ Créer un zip de release depuis `src/`:
 
 ```bash
 cd src
-zip -r ../release/NewTabRssMondary_v2.1.0.zip . -x “*.DS_Store”
+zip -r ../release/PK-New-Tab-2026.11.1.zip . -x "*.DS_Store"
 ```
 
 ### Installation locale (développement)
@@ -68,6 +68,9 @@ zip -r ../release/NewTabRssMondary_v2.1.0.zip . -x “*.DS_Store”
 5. Ouvrir un nouvel onglet pour tester
 
 ## 📝 Changelog
+
+### 2026.11.1 - 2026-11-23
+- Kit média Chrome Web Store dans `store/cws/` (icône, tuile, marquee, captures 1280×800)
 
 ### 2026.10.7 - 2026-10-02
 - Lien Ko-fi discret dans le pied de page du nouvel onglet

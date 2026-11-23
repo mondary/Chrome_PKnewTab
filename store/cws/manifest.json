@@ -1,0 +1,21 @@
+{
+  "app": "PK New Tab",
+  "live": "https://chromewebstore.google.com/detail/pk-new-tab/boeenonaijkccialgfaeipkhfhnnpfmd",
+  "icon": "icon-128.png",
+  "small_promo_tile": "tile-440x280.png",
+  "marquee": "marquee-1400x560.png",
+  "screenshots": [
+    "01-hero-1280x800.png",
+    "02-pk-new-tab-survol.png",
+    "03-pk-new-tab-vue-large.png",
+    "04-pk-new-tab-mosa-que.png"
+  ],
+  "sources": {
+    "hero": "store/v2/screenshots/newtab-mosaic-1280x800.png",
+    "screens": [
+      "store/v2/screenshots/newtab-hover-1280x800.png",
+      "store/v1/screenshots/02-mosaique-vue-large.png",
+      "store/v1/screenshots/01-nouvel-onglet-mosaique.png"
+    ]
+  }
+}
